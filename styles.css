@@ -627,6 +627,28 @@ footer {
 .tech-badges { display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; margin-top:0.8rem; }
 .tech-badges img { width:36px; height:36px; border-radius:8px; box-shadow: 0 6px 18px rgba(56,189,248,0.08); }
 
+/* visually hidden utility */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+
+/* Terminal styles */
+.terminal { padding: 2rem; display:flex; justify-content:center; }
+.terminal__window { width: min(980px, 96%); background: #020617; border-radius: 12px; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 10px 40px rgba(0,0,0,0.6); overflow: hidden; }
+.terminal__header { padding: 0.6rem 0.8rem; background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent); display:flex; gap:8px; align-items:center; }
+.terminal__header .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.terminal__header .dot.red { background:#ff5f57; }
+.terminal__header .dot.yellow { background:#ffbd2e; }
+.terminal__header .dot.green { background:#28c840; }
+.terminal__body { padding: 1rem; color: var(--muted); font-family: monospace; }
+.terminal__body pre { height: 140px; overflow:auto; margin:0; color:#cfeefd; }
+.terminal__input-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+.terminal-prompt { color: var(--neon); }
+.terminal__input-row input { background: transparent; border: none; outline: none; color: #fff; font-family: monospace; flex:1; }
+
 .experience {
   background: rgba(3, 8, 23, 0.9);
   padding: clamp(2rem, 5vw, 3.5rem);
