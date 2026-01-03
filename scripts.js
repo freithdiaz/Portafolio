@@ -178,6 +178,14 @@ document.addEventListener('DOMContentLoaded', function(){
     messages.scrollTop = messages.scrollHeight;
   }
 
+  function appendHtmlMessage(html, who='bot'){
+    const el = document.createElement('div');
+    el.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
+    el.innerHTML = html;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
   const faqs = [
     {q:['hola','buenas','buen día','buenas tardes','buenas noches'], a:'¡Hola! Soy el asistente. ¿En qué puedo ayudarte hoy?'},
     {q:['proyectos','trabajos','portfolio','portafolio'], a:'Puedes ver mis proyectos en la sección "Proyectos" o visitar mis repositorios en GitHub.'},
@@ -203,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function(){
       widget.classList.toggle('open');
       const isOpen = widget.classList.contains('open');
       widget.setAttribute('aria-hidden', !isOpen);
+      setQuickVisibility(isOpen);
       if (isOpen) input.focus();
     });
   }
@@ -212,12 +221,14 @@ document.addEventListener('DOMContentLoaded', function(){
       e.preventDefault();
       const isOpen = widget.classList.toggle('open');
       widget.setAttribute('aria-hidden', !isOpen);
+      setQuickVisibility(isOpen);
       if (isOpen) input.focus();
     });
   }
   closeBtn.addEventListener('click', () => {
     widget.classList.remove('open');
     widget.setAttribute('aria-hidden', 'true');
+    setQuickVisibility(false);
   });
 
   // Close on Escape
@@ -225,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (e.key === 'Escape' && widget.classList.contains('open')) {
       widget.classList.remove('open');
       widget.setAttribute('aria-hidden', 'true');
+      setQuickVisibility(false);
     }
   });
 
@@ -235,8 +247,18 @@ document.addEventListener('DOMContentLoaded', function(){
     if (!withinWidget) {
       widget.classList.remove('open');
       widget.setAttribute('aria-hidden', 'true');
+      setQuickVisibility(false);
     }
   });
+
+  function setQuickVisibility(visible) {
+    if (!quickContainer) return;
+    if (visible) {
+      quickContainer.removeAttribute('aria-hidden');
+    } else {
+      quickContainer.setAttribute('aria-hidden', 'true');
+    }
+  }
 
   // seed greeting
   appendMessage('Hola — puedo responder preguntas sobre mi trabajo, tecnologías y cómo contactarme.');
@@ -269,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // Quick replies (botones de respuesta rápida) con acciones soportadas
   const quickReplies = [
-    { label: 'Proyectos', msg: 'Muéstrame tus proyectos', action: { type: 'scroll', target: 'proyectos' } },
+    { label: 'Proyectos', msg: 'Muéstrame tus proyectos', action: { type: 'projects-summary', target: 'proyectos' } },
     { label: 'Contratar', msg: 'Quiero contratarte', action: { type: 'whatsapp', url: 'https://wa.me/573042162719?text=Hola%20Freith%2C%20te%20contacto%20desde%20tu%20portafolio' } },
     { label: 'Stack', msg: '¿Qué tecnologías usas?' },
     { label: 'Descargar CV', msg: '¿Dónde puedo descargar tu CV?', action: { type: 'download', target: 'cv-link' } },
@@ -281,6 +303,11 @@ document.addEventListener('DOMContentLoaded', function(){
     if (action.type === 'scroll' && action.target) {
       const el = document.getElementById(action.target);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (action.type === 'projects-summary' && action.target) {
+      const el = document.getElementById(action.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // after scrolling, show summaries
+      setTimeout(showProjectsSummary, 450);
     } else if (action.type === 'whatsapp' && action.url) {
       window.open(action.url, '_blank');
     } else if (action.type === 'download' && action.target) {
@@ -329,6 +356,11 @@ document.addEventListener('DOMContentLoaded', function(){
         const message = item.msg;
         appendMessage(message, 'user');
         if (item.action) {
+          // special case: projects summary
+          if (item.action.type === 'projects-summary') {
+            performQuickAction(item.action);
+            return;
+          }
           performQuickAction(item.action);
           // confirm action
           setTimeout(() => appendMessage('He realizado la acción solicitada.', 'bot'), 250);
@@ -348,4 +380,84 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   populateQuickReplies();
+
+  // Show detailed summaries for the projects listed in the page
+  function showProjectsSummary() {
+    const summaries = [
+      {
+        title: 'Pizzeria domicilios',
+        summary: 'Sistema web integral para pedidos a domicilio con panel de gestión y notificaciones por WhatsApp. Incluye catálogo, carrito y estados de pedido.',
+        forBusinesses: 'Ideal para restaurantes, pizzerías, cafeterías, panaderías y servicios de comida a domicilio locales.',
+        preview: 'https://freithdiaz.github.io/pizzeria-frontend/domicilio.html',
+        repo: ''
+      },
+      {
+        title: 'Gestión de Restaurant / Pizzería',
+        summary: 'Herramienta de administración para inventarios, pedidos, gestión de mesas y reportes operativos para optimizar la operación diaria.',
+        forBusinesses: 'Útil para restaurantes, bares, comedores empresariales, catering y cadenas pequeñas que necesitan control de inventario y reservas.',
+        preview: 'https://freithdiaz.github.io/pizzeria-frontend/',
+        repo: ''
+      },
+      {
+        title: 'Bot de Predicciones Trading',
+        summary: 'Bot impulsado por IA que analiza series temporales para generar señales y predicciones que apoyan decisiones de trading.',
+        forBusinesses: 'Aplicable a traders de criptomonedas, brokers pequeños, fondos cuantitativos y plataformas de análisis financiero.',
+        preview: 'https://freithdiaz.github.io/Trading-Predicction/',
+        repo: ''
+      },
+      {
+        title: 'Detector de Anomalías HDMI',
+        summary: 'Solución de visión por computadora que analiza streams de video para detectar fallas en transmisiones HDMI con alta precisión.',
+        forBusinesses: 'Operadores de TV por cable, fabricantes de decodificadores, empresas de soporte técnico y centros de monitoreo de calidad de señal.',
+        preview: '',
+        repo: 'https://github.com/freithdiaz/AI-Detector-Anomalias-en-HDMI-Decodificadores'
+      },
+      {
+        title: 'Agente Inteligente de Correo',
+        summary: 'Agente que monitorea bandejas, extrae información y genera resúmenes ejecutivos; puede automatizar respuestas y notificar por Telegram.',
+        forBusinesses: 'Departamentos de atención al cliente, equipos de ventas, soporte técnico y empresas que manejan volúmenes altos de correo.',
+        preview: '',
+        repo: 'https://github.com/freithdiaz/Agente-IA-correo'
+      },
+      {
+        title: 'Chatbot con Memoria Semántica (ECO)',
+        summary: 'Chatbot corporativo que utiliza embeddings para respuestas contextuales y se integra con Flask y WebSockets para memoria y tiempo real.',
+        forBusinesses: 'Centros de soporte, documentación interna, empresas que quieren automatizar FAQs y procesos de onboarding.',
+        preview: '',
+        repo: 'https://github.com/freithdiaz/AI-Chatbot-v1.0'
+      },
+      {
+        title: 'Mis Finanzas (Mobile)',
+        summary: 'App móvil en React Native para control de finanzas personales con dashboards, metas y sincronización offline.',
+        forBusinesses: 'Startups fintech, asesores financieros y proyectos de educación financiera para usuarios finales.',
+        preview: '',
+        repo: 'https://github.com/freithdiaz/Finanzas'
+      },
+      {
+        title: 'Automatizaciones Corporativas (SAP / Oracle)',
+        summary: 'Scripts y pipelines para reducir tareas manuales en ERPs, extraer datos y sincronizar procesos, incrementando productividad.',
+        forBusinesses: 'Empresas que usan SAP, Oracle u otros ERPs y necesitan reducir trabajo repetitivo en procesos administrativos.',
+        preview: '',
+        repo: ''
+      }
+    ];
+
+    // Post each summary with slight delay to simulate conversation
+    let delay = 300;
+    summaries.forEach(s => {
+      setTimeout(() => {
+        const links = [];
+        if (s.preview) links.push(`<a class="project-link" href="${s.preview}" target="_blank" rel="noreferrer">Ver demo</a>`);
+        if (s.repo) links.push(`<a class="project-link" href="${s.repo}" target="_blank" rel="noreferrer">Repositorio</a>`);
+        const html = `<strong>— ${s.title} —</strong><br>${s.summary}<br><em>Por ejemplo, puede servir a:</em> ${s.forBusinesses}` +
+          (links.length ? `<div class="project-links">${links.join(' ')}</div>` : '');
+        appendHtmlMessage(html, 'bot');
+      }, delay);
+      delay += 700;
+    });
+    // final suggestion
+    setTimeout(() => {
+      appendHtmlMessage('¿Quieres que abra la sección de algún proyecto en particular o que te muestre <a href="https://github.com/freithdiaz" target="_blank" rel="noreferrer">mis repositorios en GitHub</a>?', 'bot');
+    }, delay + 200);
+  }
 });
