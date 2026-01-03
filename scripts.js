@@ -27,11 +27,32 @@ function typeNext() {
   typedEl.textContent = current.slice(0, charIndex);
   charIndex++;
   if (charIndex > current.length) {
+    // Pause on full phrase, then run disintegration (Thanos-like)
     setTimeout(() => {
-      charIndex = 0;
-      tIndex = (tIndex + 1) % phrases.length;
-      setTimeout(typeNext, 500);
-    }, 1400);
+      const text = typedEl.textContent || current;
+      typedEl.innerHTML = '';
+      const chars = Array.from(text);
+      const spans = chars.map((ch, i) => {
+        const s = document.createElement('span');
+        s.textContent = ch === ' ' ? '\u00A0' : ch;
+        s.className = 'disintegrate';
+        // staggered delay: small random jitter + index offset
+        const delay = i * 35 + Math.floor(Math.random() * 80);
+        s.style.animationDelay = delay + 'ms';
+        typedEl.appendChild(s);
+        return s;
+      });
+
+      // wait for last animation (approx max delay + duration)
+      const maxDelay = chars.length * 35 + 160;
+      setTimeout(() => {
+        // clear and prepare next phrase
+        typedEl.innerHTML = '';
+        charIndex = 0;
+        tIndex = (tIndex + 1) % phrases.length;
+        setTimeout(typeNext, 200);
+      }, maxDelay + 900);
+    }, 900);
   } else {
     setTimeout(typeNext, 80);
   }
