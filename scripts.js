@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const form = document.getElementById('chat-form');
   const input = document.getElementById('chat-input');
   const messages = document.getElementById('chat-messages');
+  const quickContainer = document.getElementById('chat-quick');
 
   if (!widget || !form || !input || !messages) return;
 
@@ -265,4 +266,86 @@ document.addEventListener('DOMContentLoaded', function(){
     // return fetch('/.netlify/functions/chat', { method: 'POST', body: JSON.stringify({ message }) }).then(r=>r.json()).then(j=>j.text);
     throw new Error('No remote chat endpoint configured. Implement server-side proxy to use a remote AI.');
   };
+
+  // Quick replies (botones de respuesta rápida) con acciones soportadas
+  const quickReplies = [
+    { label: 'Proyectos', msg: 'Muéstrame tus proyectos', action: { type: 'scroll', target: 'proyectos' } },
+    { label: 'Contratar', msg: 'Quiero contratarte', action: { type: 'whatsapp', url: 'https://wa.me/573042162719?text=Hola%20Freith%2C%20te%20contacto%20desde%20tu%20portafolio' } },
+    { label: 'Stack', msg: '¿Qué tecnologías usas?' },
+    { label: 'Descargar CV', msg: '¿Dónde puedo descargar tu CV?', action: { type: 'download', target: 'cv-link' } },
+    { label: 'Contacto', msg: '¿Cómo te contacto?', action: { type: 'scroll', target: 'contacto' } }
+  ];
+
+  function performQuickAction(action) {
+    if (!action || !action.type) return;
+    if (action.type === 'scroll' && action.target) {
+      const el = document.getElementById(action.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (action.type === 'whatsapp' && action.url) {
+      window.open(action.url, '_blank');
+    } else if (action.type === 'download' && action.target) {
+      // target may be an id
+      const a = document.getElementById(action.target) || document.querySelector(action.target);
+      if (a && a.click) a.click();
+      else if (typeof action.url === 'string') window.open(action.url, '_blank');
+    }
+  }
+
+  function populateQuickReplies() {
+    if (!quickContainer) return;
+    // If the HTML already contains configured quick-reply buttons (data-action), use them
+    const existing = Array.from(quickContainer.querySelectorAll('[data-action]'));
+    if (existing.length > 0) {
+      // attach handlers to existing buttons
+      existing.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const msg = btn.dataset.msg || btn.textContent || '';
+          const actionRaw = btn.dataset.action || '';
+          appendMessage(msg, 'user');
+          if (actionRaw) {
+            try {
+              const action = JSON.parse(actionRaw);
+              performQuickAction(action);
+              appendMessage('He realizado la acción solicitada.', 'bot');
+            } catch (e) {
+              appendMessage(botReplyFor(msg), 'bot');
+            }
+          } else {
+            appendMessage(botReplyFor(msg), 'bot');
+          }
+        });
+      });
+      return;
+    }
+
+    quickContainer.innerHTML = '';
+    quickReplies.forEach(item => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quick-reply';
+      btn.textContent = item.label;
+      btn.dataset.msg = item.msg;
+      btn.addEventListener('click', () => {
+        const message = item.msg;
+        appendMessage(message, 'user');
+        if (item.action) {
+          performQuickAction(item.action);
+          // confirm action
+          setTimeout(() => appendMessage('He realizado la acción solicitada.', 'bot'), 250);
+          return;
+        }
+        // show thinking
+        appendMessage('...', 'bot');
+        setTimeout(() => {
+          const last = Array.from(messages.querySelectorAll('.chat-msg.bot')).pop();
+          if (last && last.textContent === '...') last.remove();
+          const reply = botReplyFor(message);
+          appendMessage(reply, 'bot');
+        }, 500 + Math.floor(Math.random() * 600));
+      });
+      quickContainer.appendChild(btn);
+    });
+  }
+
+  populateQuickReplies();
 });

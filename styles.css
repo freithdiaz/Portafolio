@@ -1026,6 +1026,12 @@ footer {
 .chat-msg.user { align-self: flex-end; background: linear-gradient(180deg, rgba(90,225,255,0.12), rgba(56,189,248,0.09)); color: #eaffff; }
 .chat-msg.bot { align-self: flex-start; background: rgba(255,255,255,0.03); color: var(--muted); }
 
+/* Quick replies (buttons) */
+.chat-quick { padding: 10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top: 1px solid rgba(255,255,255,0.02); }
+.chat-quick button.quick-reply { background: rgba(90,225,255,0.06); color: var(--neon); border: 1px solid rgba(90,225,255,0.06); padding: 6px 10px; border-radius: 999px; cursor: pointer; font-weight:600; }
+.chat-quick button.quick-reply:focus { outline: 2px solid rgba(90,225,255,0.18); }
+.chat-quick[aria-hidden="true"] { display: none; }
+
 .chat-form { display:flex; gap:8px; padding: 10px; border-top: 1px solid rgba(255,255,255,0.02); }
 .chat-form input { flex:1; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 10px 12px; border: 1px solid rgba(255,255,255,0.03); color: #fff; outline:none; }
 .chat-form button { background: var(--accent); color: #012; border: none; padding: 10px 12px; border-radius: 10px; font-weight: 600; cursor: pointer; }
