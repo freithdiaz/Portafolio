@@ -373,7 +373,7 @@
               Llamar +57 304 216 2719
             </a>
             <a class="btn btn--whatsapp" href="https://wa.me/573042162719?text=Hola%20Freith%2C%20te%20contacto%20desde%20tu%20portafolio" target="_blank" rel="noreferrer" aria-label="Enviar mensaje por WhatsApp">
-              <img src="assets/icon-whatsapp.svg" alt="" class="contact-icon" aria-hidden="true"/>
+              <img src="assets\icons-whatsapp.svg" alt="" class="contact-icon" aria-hidden="true"/>
               WhatsApp
             </a>
           </div>
@@ -408,5 +408,24 @@
       <p>© 2026 Jhoel Portafolio..</p>
     </footer>
     <script src="scripts.js"></script>
+    <!-- WhatsApp floating button -->
+    <a href="https://wa.me/573042162719?text=Hola%20Freith%2C%20te%20contacto%20desde%20tu%20portafolio" target="_blank" rel="noreferrer" class="whatsapp-float" aria-label="Contactar por WhatsApp">
+      <img src="assets\icons-whatsapp.svg" alt="WhatsApp" />
+    </a>
+    <!-- Bot floating icon (derecha, debajo del WhatsApp) -->
+    <a href="#chat-widget" class="bot-float" aria-label="Abrir asistente" id="bot-float">
+      <img src="assets\chat-bot_9733185.png" alt="Bot" />
+    </a>
+    <aside class="chat-widget" id="chat-widget" aria-hidden="true">
+      <header class="chat-header">
+        <strong>Asistente</strong>
+        <button id="chat-close" aria-label="Cerrar chat">✕</button>
+      </header>
+      <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+      <form class="chat-form" id="chat-form">
+        <input id="chat-input" placeholder="Escribe tu pregunta..." aria-label="Mensaje al asistente" autocomplete="off" />
+        <button type="submit" aria-label="Enviar">Enviar</button>
+      </form>
+    </aside>
   </body>
 </html>

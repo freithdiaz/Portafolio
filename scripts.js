@@ -156,3 +156,113 @@ if (termInput && termOut) {
     }
   });
 }
+
+/* Simple local chatbot widget (rule-based FAQ). */
+document.addEventListener('DOMContentLoaded', function(){
+  const toggle = document.getElementById('chat-toggle');
+  const widget = document.getElementById('chat-widget');
+  const closeBtn = document.getElementById('chat-close');
+  const botFloat = document.getElementById('bot-float');
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('chat-input');
+  const messages = document.getElementById('chat-messages');
+
+  if (!widget || !form || !input || !messages) return;
+
+  function appendMessage(text, who='bot'){
+    const el = document.createElement('div');
+    el.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
+    el.textContent = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  const faqs = [
+    {q:['hola','buenas','buen día','buenas tardes','buenas noches'], a:'¡Hola! Soy el asistente. ¿En qué puedo ayudarte hoy?'},
+    {q:['proyectos','trabajos','portfolio','portafolio'], a:'Puedes ver mis proyectos en la sección "Proyectos" o visitar mis repositorios en GitHub.'},
+    {q:['contratar','colaborar','trabajar'], a:'Interesante — puedes escribirme por WhatsApp o enviar un correo desde la sección de contacto.'},
+    {q:['tecnologías','stack','tecnologias'], a:'Trabajo con Python, Flask, OpenCV, JavaScript, React Native y despliegue en GitHub Pages.'},
+    {q:['precio','tarifa','costo'], a:'Las tarifas dependen del alcance. Escríbeme los requerimientos y preparo una propuesta.'},
+    {q:['cv','curriculum','hoja de vida'], a:'Puedes descargar mi portafolio/CV desde la sección de experiencia si está disponible.'}
+  ];
+
+  function botReplyFor(message){
+    const text = message.toLowerCase();
+    for (const item of faqs){
+      for (const key of item.q){
+        if (text.includes(key)) return item.a;
+      }
+    }
+    // fallback: suggest contact or search
+    return "Lo siento, no estoy seguro. ¿Quieres que te conecte con mi WhatsApp o prefieres ver proyectos relacionados?";
+  }
+
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      widget.classList.toggle('open');
+      const isOpen = widget.classList.contains('open');
+      widget.setAttribute('aria-hidden', !isOpen);
+      if (isOpen) input.focus();
+    });
+  }
+  // open chat when clicking the bot floating icon
+  if (botFloat) {
+    botFloat.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = widget.classList.toggle('open');
+      widget.setAttribute('aria-hidden', !isOpen);
+      if (isOpen) input.focus();
+    });
+  }
+  closeBtn.addEventListener('click', () => {
+    widget.classList.remove('open');
+    widget.setAttribute('aria-hidden', 'true');
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && widget.classList.contains('open')) {
+      widget.classList.remove('open');
+      widget.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // Close when clicking outside the widget
+  document.addEventListener('click', (e) => {
+    if (!widget.classList.contains('open')) return;
+    const withinWidget = widget.contains(e.target) || (botFloat && botFloat.contains(e.target));
+    if (!withinWidget) {
+      widget.classList.remove('open');
+      widget.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // seed greeting
+  appendMessage('Hola — puedo responder preguntas sobre mi trabajo, tecnologías y cómo contactarme.');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = input.value.trim();
+    if (!val) return;
+    appendMessage(val, 'user');
+    input.value = '';
+
+    // simulate thinking
+    appendMessage('...', 'bot');
+    setTimeout(() => {
+      // remove the '...' placeholder
+      const last = Array.from(messages.querySelectorAll('.chat-msg.bot')).pop();
+      if (last && last.textContent === '...') last.remove();
+
+      const reply = botReplyFor(val);
+      appendMessage(reply, 'bot');
+    }, 600 + Math.floor(Math.random()*600));
+  });
+
+  // OPTIONAL: function to forward to external AI API (server-side required to keep API key secret)
+  window.chatbotFetchRemote = async function(message){
+    // Example placeholder: POST to your server endpoint which calls OpenAI/other AI and returns text
+    // return fetch('/.netlify/functions/chat', { method: 'POST', body: JSON.stringify({ message }) }).then(r=>r.json()).then(j=>j.text);
+    throw new Error('No remote chat endpoint configured. Implement server-side proxy to use a remote AI.');
+  };
+});
