@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta property="og:title" content="Portafolio — Freith Jhoel Diaz Arias" />
+      <meta property="og:description" content="Soluciones de IA y desarrollo full-stack. Portafolio profesional." />
+      <meta property="og:type" content="website" />
+      <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <title>Portafolio de Jhoel</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -35,10 +39,12 @@
         </div>
       </nav>
       <div class="tech-overlay" aria-hidden="true"></div>
+      <div class="grid-scan" aria-hidden="true"></div>
       <div class="hero__layout">
         <div class="hero__content">
           <p class="eyebrow">Portafolio Profesional: Soluciones de IA y Desarrollo de Software</p>
-          <h1>Freith Jhoel Diaz Arias transforma desafíos empresariales en arquitecturas inteligentes.</h1>
+          <h1>Freith Jhoel Diaz Arias — <span id="typed" aria-hidden="true"></span><span class="visually-hidden">transforma desafíos empresariales en arquitecturas inteligentes.</span></h1>
+          <noscript><p>Freith Jhoel Diaz Arias transforma desafíos empresariales en arquitecturas inteligentes.</p></noscript>
           <p>
             Combino desarrollo full-stack, automatizaciones inteligentes y despliegues rápidos con alta Calidad.
             Soy ese puente entre código y el
@@ -64,6 +70,26 @@
         </article>
       </div>
     </header>
+
+    <!-- Terminal mockup -->
+    <section class="terminal" id="terminal" aria-label="Terminal interactiva">
+      <div class="terminal__window">
+        <div class="terminal__header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="terminal__body">
+          <pre id="terminal-output">$ welcome@freith:~$  
+Type `help` to see sample commands.
+</pre>
+          <div class="terminal__input-row">
+            <span class="terminal-prompt">$</span>
+            <input id="terminal-input" aria-label="Comando terminal" placeholder="help" />
+          </div>
+        </div>
+      </div>
+    </section>
 
     <main>
       <section class="profile" id="perfil">
