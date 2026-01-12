@@ -13,8 +13,9 @@ links.forEach((link) => {
 
 /* Typing effect for hero */
 const phrases = [
-  'Arquitecturas Inteligentes.',
+  'Software a la Medida.',
   'Automatizaciones con IA.',
+  'Mejoras en Productividad.',
   'Despliegues rápidos y confiables.'
 ];
 const typedEl = document.getElementById('typed');
