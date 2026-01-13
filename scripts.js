@@ -54,15 +54,15 @@ function typeNext() {
           rects.push(r);
         });
         // compute canvas offset
-        const canvasRect = canvas ? canvas.getBoundingClientRect() : { left:0, top:0 };
+        const canvasRect = canvas ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
         spans.forEach((s, i) => {
           const r = rects[i];
           if (!r) return;
-          const cx = r.left - canvasRect.left + r.width/2;
-          const cy = r.top - canvasRect.top + r.height/2;
+          const cx = r.left - canvasRect.left + r.width / 2;
+          const cy = r.top - canvasRect.top + r.height / 2;
           // use computed color or neon
           const color = getComputedStyle(typedEl).color || '#64f0ff';
-          spawnParticles(cx, cy, color, 6 + Math.floor(Math.random()*18));
+          spawnParticles(cx, cy, color, 6 + Math.floor(Math.random() * 18));
         });
       }, 120);
 
@@ -119,7 +119,7 @@ if (canvas) {
     particles.forEach(p => {
       const t = (now - p.born) / p.life;
       p.x += p.vx * 1.2;
-      p.y += p.vy * (1 + t*1.6) + t * 0.6;
+      p.y += p.vy * (1 + t * 1.6) + t * 0.6;
       p.vy += 0.03; // gravity
       const alpha = 1 - t;
       ctx.fillStyle = p.color;
@@ -159,7 +159,7 @@ if (termInput && termOut) {
 }
 
 /* Simple local chatbot widget (rule-based FAQ). */
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function () {
   const toggle = document.getElementById('chat-toggle');
   const widget = document.getElementById('chat-widget');
   const closeBtn = document.getElementById('chat-close');
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   if (!widget || !form || !input || !messages) return;
 
-  function appendMessage(text, who='bot'){
+  function appendMessage(text, who = 'bot') {
     const el = document.createElement('div');
     el.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
     el.textContent = text;
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function(){
     messages.scrollTop = messages.scrollHeight;
   }
 
-  function appendHtmlMessage(html, who='bot'){
+  function appendHtmlMessage(html, who = 'bot') {
     const el = document.createElement('div');
     el.className = 'chat-msg ' + (who === 'user' ? 'user' : 'bot');
     el.innerHTML = html;
@@ -188,18 +188,18 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   const faqs = [
-    {q:['hola','buenas','buen día','buenas tardes','buenas noches'], a:'¡Hola! Soy el asistente. ¿En qué puedo ayudarte hoy?'},
-    {q:['proyectos','trabajos','portfolio','portafolio'], a:'Puedes ver mis proyectos en la sección "Proyectos" o visitar mis repositorios en GitHub.'},
-    {q:['contratar','colaborar','trabajar'], a:'Interesante — puedes escribirme por WhatsApp o enviar un correo desde la sección de contacto.'},
-    {q:['tecnologías','stack','tecnologias'], a:'Trabajo con Python, Flask, OpenCV, JavaScript, React Native y despliegue en GitHub Pages.'},
-    {q:['precio','tarifa','costo'], a:'Las tarifas dependen del alcance. Escríbeme los requerimientos y preparo una propuesta.'},
-    {q:['cv','curriculum','hoja de vida'], a:'Puedes descargar mi portafolio/CV desde la sección de experiencia si está disponible.'}
+    { q: ['hola', 'buenas', 'buen día', 'buenas tardes', 'buenas noches'], a: '¡Hola! Soy el asistente. ¿En qué puedo ayudarte hoy?' },
+    { q: ['proyectos', 'trabajos', 'portfolio', 'portafolio'], a: 'Puedes ver mis proyectos en la sección "Proyectos" o visitar mis repositorios en GitHub.' },
+    { q: ['contratar', 'colaborar', 'trabajar'], a: 'Interesante — puedes escribirme por WhatsApp o enviar un correo desde la sección de contacto.' },
+    { q: ['tecnologías', 'stack', 'tecnologias'], a: 'Trabajo con Python, Flask, OpenCV, JavaScript, React Native y despliegue en GitHub Pages.' },
+    { q: ['precio', 'tarifa', 'costo'], a: 'Las tarifas dependen del alcance. Escríbeme los requerimientos y preparo una propuesta.' },
+    { q: ['cv', 'curriculum', 'hoja de vida'], a: 'Puedes descargar mi portafolio/CV desde la sección de experiencia si está disponible.' }
   ];
 
-  function botReplyFor(message){
+  function botReplyFor(message) {
     const text = message.toLowerCase();
-    for (const item of faqs){
-      for (const key of item.q){
+    for (const item of faqs) {
+      for (const key of item.q) {
         if (text.includes(key)) return item.a;
       }
     }
@@ -280,11 +280,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
       const reply = botReplyFor(val);
       appendMessage(reply, 'bot');
-    }, 600 + Math.floor(Math.random()*600));
+    }, 600 + Math.floor(Math.random() * 600));
   });
 
   // OPTIONAL: function to forward to external AI API (server-side required to keep API key secret)
-  window.chatbotFetchRemote = async function(message){
+  window.chatbotFetchRemote = async function (message) {
     // Example placeholder: POST to your server endpoint which calls OpenAI/other AI and returns text
     // return fetch('/.netlify/functions/chat', { method: 'POST', body: JSON.stringify({ message }) }).then(r=>r.json()).then(j=>j.text);
     throw new Error('No remote chat endpoint configured. Implement server-side proxy to use a remote AI.');
@@ -462,3 +462,80 @@ document.addEventListener('DOMContentLoaded', function(){
     }, delay + 200);
   }
 });
+
+/* Floating Project Preview Gallery */
+let currentGalleryImages = [];
+let currentImageIndex = 0;
+
+window.openPreview = function (images) {
+  if (!images || images.length === 0) {
+    alert('Próximamente: Imágenes de este proyecto estarán disponibles pronto.');
+    return;
+  }
+  const modal = document.getElementById('gallery-modal');
+  const img = document.getElementById('gallery-img');
+  const counterTotal = document.getElementById('gallery-total');
+
+  if (!modal || !img) return;
+
+  currentGalleryImages = images;
+  currentImageIndex = 0;
+
+  img.src = currentGalleryImages[currentImageIndex];
+  counterTotal.textContent = currentGalleryImages.length;
+  updateGalleryCounter();
+
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden'; // Prevent scroll
+};
+
+window.closePreview = function () {
+  const modal = document.getElementById('gallery-modal');
+  if (!modal) return;
+
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = ''; // Restore scroll
+};
+
+window.changeImage = function (step) {
+  currentImageIndex += step;
+  if (currentImageIndex >= currentGalleryImages.length) currentImageIndex = 0;
+  if (currentImageIndex < 0) currentImageIndex = currentGalleryImages.length - 1;
+
+  const img = document.getElementById('gallery-img');
+  if (img) img.src = currentGalleryImages[currentImageIndex];
+  updateGalleryCounter();
+};
+
+function updateGalleryCounter() {
+  const counterCurrent = document.getElementById('gallery-current');
+  if (counterCurrent) counterCurrent.textContent = currentImageIndex + 1;
+}
+
+// Close gallery on Escape
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('gallery-modal');
+  if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+    closePreview();
+  }
+  if (modal && modal.classList.contains('open')) {
+    if (e.key === 'ArrowRight') changeImage(1);
+    if (e.key === 'ArrowLeft') changeImage(-1);
+  }
+});
+
+/* Secure Repository Access */
+window.secureRepoAccess = function (repoUrl) {
+  const password = prompt('Este repositorio es privado/restringido. Por favor ingrese la clave de acceso:');
+
+  if (password === null) return; // User cancelled
+
+  if (password === 'jhoel1234') {
+    alert('Acceso concedido. Redirigiendo...');
+    window.open(repoUrl, '_blank');
+  } else {
+    alert('Clave incorrecta. Acceso denegado.');
+  }
+};
